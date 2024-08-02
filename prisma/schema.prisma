@@ -13,27 +13,116 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model User {
+model Collection {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  email     String   @unique
-  name      String?
-  role      Role     @default(USER)
-  posts     Post[]
+  name      String   @unique
+  img       String?   
+  product   Product[]
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  published Boolean  @default(false)
-  title     String   @db.VarChar(255)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
+model Product {
+  id            Int         @id @default(autoincrement())
+  name          String      @unique
+  img_product   Img_product[]
+  cost          Int         @default(0)
+  sale_cost     Int?
+  description   String?     @db.Text
+  quantity      Int         @default(0)
+  new           Boolean?     @default(true)
+  collection    Collection?  @relation(fields: [collectionId], references: [id])
+  collectionId  Int?
+  parent_category  Parent_category?  @relation(fields: [parent_categoryId], references: [id])
+  parent_categoryId Int?
+  children_category Children_category? @relation(fields: [children_categoryId], references: [id])
+  children_categoryId  Int?
+  productOrder  ProductOrder[]
+  productColor  ProductColor[]
+  productSize   ProductSize[]
+
+  createdAt     DateTime?    @default(now())
+  updatedAt     DateTime?    @updatedAt
+}
+model Order{
+  id            Int         @id @default(autoincrement())
+  product       ProductOrder[]
+  status_id     Int
+  status        Status      @relation(fields: [status_id], references: [id])
+  customer_name String
+  customer_tel  String
+  customer_address  String
+  customer_note String      @db.Text
+  note          String      @db.Text
+  delivery_id   Int
+  delivery      Delivery    @relation(fields: [delivery_id], references: [id])
+  total         Int
+}
+model ProductOrder{
+  order         Order       @relation(fields: [orderId], references: [id])
+  orderId       Int
+  product       Product     @relation(fields: [productId], references: [id])
+  productId     Int
+  sizeId        Int
+  colorId       Int
+  @@id([productId, colorId,sizeId])
+}
+model Img_product{
+  id            Int         @id @default(autoincrement())
+  link          String
+  product       Product     @relation(fields: [productId], references: [id])
+  productId     Int
+}
+model Parent_category{
+  id            Int         @id @default(autoincrement())
+  name          String      @unique
+  product       Product[]
+  children_category Children_category[]
+
+}
+model Children_category{
+  id            Int         @id @default(autoincrement())
+  name          String      @unique
+  product       Product[]
+  parent_category    Parent_category  @relation(fields: [pacaId], references: [id])
+  pacaId        Int
+}
+model Color{
+  id           Int         @id @default(autoincrement())
+  name         String      @unique
+  code         String
+  productColor ProductColor[]
+}
+model ProductColor{
+  product    Product      @relation(fields: [productId], references: [id])
+  productId  Int
+  color      Color        @relation(fields: [colorId], references: [id])
+  colorId    Int
+
+  @@id([productId, colorId])
 }
 
-enum Role {
-  USER
-  ADMIN
+model Size{
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  productSize ProductSize[]
+}
+model ProductSize{
+  product    Product    @relation(fields: [productId], references: [id])
+  productId  Int
+  size       Size        @relation(fields: [sizeId], references: [id])
+  sizeId     Int
+
+  @@id([productId, sizeId])
+}
+
+model Status{
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  code      String
+  order     Order[]
+}
+model Delivery{
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  cost      Int
+  order     Order[]
 }

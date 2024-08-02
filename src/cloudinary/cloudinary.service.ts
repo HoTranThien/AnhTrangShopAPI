@@ -1,54 +1,46 @@
 import cloudinary from "./cloudinary.config";
-import { CloudinaryDTO } from "./dto/cloudinary.dto";
 import { Injectable } from "@nestjs/common";
+import path from "path";
 import { Readable } from "stream";
 
 @Injectable()
 export class CloudinaryService{
-  async PostImg(imgs:Array<Express.Multer.File>){
-    //let img = "C:/Users/ttho1/OneDrive/Desktop/My Project/anh-trang-shop-api/src/assets/zalo.png";
-    //let collection:string[] = [];
-    // for(let i =0 ; i < imgs.path.length;i++){
-    //   await cloudinary.single('file')
-    //   collection.push(imgs.path[i]);
-    // }
-    //console.log(imgs.originalname);
-    //let a = await cloudinary.uploader.upload(img,{folder:"AnhTrangShop"});
 
-    // return new Promise((res, rej) => {
-    //   const theTransformStream = cloudinary.uploader.upload_stream({folder:"AnhTrangShop"},
-    //     (err, result) => {
-    //       if (err) return rej(err);
-    //       res(result);
-    //     }
-    //   );
-    //   let str = Readable.from(imgs[0].buffer);
-    //   str.pipe(theTransformStream);
+  private PostOne(img, list:string[]){
+    return new Promise((res,rej) => {
+      const theTransformStream = cloudinary.uploader.upload_stream(
+        {folder:"AnhTrangShop"},
+        (err, result) => {     
+          if (err) return rej(err);
+          list.push(result.url)
+          res(result);
+        }
+      );
+      let str = Readable.from(img.buffer);
+      str.pipe(theTransformStream);
+  })}
 
-        // for (let i=0; i<imgs.length;i++)
-        //   {
-        //     const theTransformStream = cloudinary.uploader.upload_stream({folder:"AnhTrangShop"});
-        //     let str = Readable.from(imgs[i].buffer).pipe(theTransformStream);
-        //   }
-    return new Promise((res, rej) => {
-      for (let i=0; i<imgs.length;i++){
-        const theTransformStream = cloudinary.uploader.upload_stream({folder:"AnhTrangShop"},
-          (err, result) => {
-            if (err) return rej(err);
-            res(result);
-          }
-        );
-        let str = Readable.from(imgs[i].buffer).pipe(theTransformStream);
-      }
-
-    });
+  async PostImgs(imgs:Express.Multer.File[]){
+      let list:string[] = [];
+      let result = await imgs.reduce((pre,cur)=>
+        pre.then(()=> this.PostOne(cur,list))
+      ,Promise.resolve());
+      return list;
 
   }
 
-  async DeleteImg(imgs:CloudinaryDTO){
-    for(let i =0 ; i < imgs.path.length;i++){
-      //await cloudinary.uploader.destroy(imgs.path[i]);
+
+  async DeleteImgs(imgs:string[]){
+    for(let i =0 ; i < imgs.length;i++){
+      let filename = this.findpublic_id(imgs[i]);
+      await cloudinary.uploader.destroy(filename);
     }
-    return "Updated product";
+    return {result:"OK"};
 }
+
+  findpublic_id(path:string){
+    path = path.substring(0,path.lastIndexOf('.'));
+    let arr = path.split('/');
+    return arr[arr.length-2].concat('/',arr[arr.length-1]);
+  }
 }

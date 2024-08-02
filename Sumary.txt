@@ -1,0 +1,43 @@
+- collections:
++ name
++ img
++ product
+
+- products:
++ id
++ name
++ img
++ cost
++ sale_cost
++ description
++ quantity
++ collection (1-M)
++ parent_category (1-M)
++ children_category (M-M)
++ color (M-M)
++ size (M-M)
++ new
+
+- parent_category:
++ id
++ name
++ product
++ children_category
+
+- children_category:
++ id
++ name
++ product
++ parent_category
+
+- color:
++ id
++ name
++ product
+
+- size:
++ id
++ name
++ product
+
+- delivery:(optional)
