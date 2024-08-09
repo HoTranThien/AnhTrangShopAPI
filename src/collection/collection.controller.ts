@@ -10,6 +10,10 @@ export class CollectionController{
     getAll(){
         return this.productService.getAllCollection();
     }
+    @Get('fulldetail')
+    getAllFulldetail(){
+        return this.productService.getAllCollectionFullDetail();
+    }
 
     @Get('getone/:id')
     getOne(@Param('id') id:number){

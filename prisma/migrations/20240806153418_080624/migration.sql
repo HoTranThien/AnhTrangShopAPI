@@ -30,14 +30,16 @@ CREATE TABLE `Product` (
 -- CreateTable
 CREATE TABLE `Order` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `status_id` INTEGER NOT NULL,
+    `status` ENUM('NEW_ORDER', 'IN_DELIVERY', 'DONE', 'CANCEL') NOT NULL DEFAULT 'NEW_ORDER',
     `customer_name` VARCHAR(191) NOT NULL,
     `customer_tel` VARCHAR(191) NOT NULL,
-    `customer_address` VARCHAR(191) NOT NULL,
-    `customer_note` VARCHAR(191) NOT NULL,
-    `note` VARCHAR(191) NOT NULL,
+    `customer_address` VARCHAR(1000) NOT NULL,
+    `customer_note` TEXT NOT NULL,
+    `note` TEXT NOT NULL,
     `delivery_id` INTEGER NOT NULL,
     `total` INTEGER NOT NULL,
+    `createdAt` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -48,6 +50,7 @@ CREATE TABLE `ProductOrder` (
     `productId` INTEGER NOT NULL,
     `sizeId` INTEGER NOT NULL,
     `colorId` INTEGER NOT NULL,
+    `quantity` INTEGER NOT NULL,
 
     PRIMARY KEY (`productId`, `colorId`, `sizeId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -116,16 +119,6 @@ CREATE TABLE `ProductSize` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Status` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
-    `code` VARCHAR(191) NOT NULL,
-
-    UNIQUE INDEX `Status_name_key`(`name`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `Delivery` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
@@ -136,19 +129,16 @@ CREATE TABLE `Delivery` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `Product` ADD CONSTRAINT `Product_collectionId_fkey` FOREIGN KEY (`collectionId`) REFERENCES `Collection`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Product` ADD CONSTRAINT `Product_collectionId_fkey` FOREIGN KEY (`collectionId`) REFERENCES `Collection`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Product` ADD CONSTRAINT `Product_parent_categoryId_fkey` FOREIGN KEY (`parent_categoryId`) REFERENCES `Parent_category`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Product` ADD CONSTRAINT `Product_parent_categoryId_fkey` FOREIGN KEY (`parent_categoryId`) REFERENCES `Parent_category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Product` ADD CONSTRAINT `Product_children_categoryId_fkey` FOREIGN KEY (`children_categoryId`) REFERENCES `Children_category`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Product` ADD CONSTRAINT `Product_children_categoryId_fkey` FOREIGN KEY (`children_categoryId`) REFERENCES `Children_category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Order` ADD CONSTRAINT `Order_status_id_fkey` FOREIGN KEY (`status_id`) REFERENCES `Status`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Order` ADD CONSTRAINT `Order_delivery_id_fkey` FOREIGN KEY (`delivery_id`) REFERENCES `Delivery`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Order` ADD CONSTRAINT `Order_delivery_id_fkey` FOREIGN KEY (`delivery_id`) REFERENCES `Delivery`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ProductOrder` ADD CONSTRAINT `ProductOrder_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -160,7 +150,7 @@ ALTER TABLE `ProductOrder` ADD CONSTRAINT `ProductOrder_productId_fkey` FOREIGN 
 ALTER TABLE `Img_product` ADD CONSTRAINT `Img_product_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Children_category` ADD CONSTRAINT `Children_category_pacaId_fkey` FOREIGN KEY (`pacaId`) REFERENCES `Parent_category`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Children_category` ADD CONSTRAINT `Children_category_pacaId_fkey` FOREIGN KEY (`pacaId`) REFERENCES `Parent_category`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ProductColor` ADD CONSTRAINT `ProductColor_productId_fkey` FOREIGN KEY (`productId`) REFERENCES `Product`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

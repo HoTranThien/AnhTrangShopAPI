@@ -1,10 +1,13 @@
-import { IsNotEmpty, IsNumberString, IsString } from "class-validator";
+import { ProductOrder } from "@prisma/client";
+import { IsEmpty, IsNotEmpty, IsNumber, IsNumberString, IsObject, isString, IsString, ValidateIf } from "class-validator";
 
 export class OrderDto{
 
-    @IsNumberString()
+    @ValidateIf(value=>typeof(value) == 'string'||value==null )
+    status:string
+
     @IsNotEmpty()
-    status_id:number
+    products:ProductOrder[]
 
     @IsString()
     @IsNotEmpty()
@@ -18,19 +21,45 @@ export class OrderDto{
     @IsNotEmpty()
     customer_address:string
 
-    @IsString()
-    @IsNotEmpty()
-    customer_note:string
+    @ValidateIf(value=>typeof(value) == 'string'||value==null )
+    customer_note:string = ""
 
-    @IsString()
-    @IsNotEmpty()
-    note:string
+    @ValidateIf(value=>typeof(value) == 'string'||value==null )
+    note:string =""
 
-    @IsNumberString()
+    @IsNumber()
     @IsNotEmpty()
-
     delivery_id:number
-    @IsNumberString()
+
+    @IsNumber()
     @IsNotEmpty()
     total:number
+}
+
+export class UpdateOrderDto{
+    @ValidateIf(value=>typeof(value) == 'string'||value==null )
+    status:string
+
+    @IsString()
+    @IsNotEmpty()
+    customer_name:string
+
+    @IsString()
+    @IsNotEmpty()
+    customer_tel:string
+
+    @IsString()
+    @IsNotEmpty()
+    customer_address:string
+
+    @ValidateIf(value=>typeof(value) == 'string'||value==null )
+    customer_note:string = ""
+
+    @ValidateIf(value=>typeof(value) == 'string'||value==null )
+    note:string =""
+}
+export class Status{
+    @IsString()
+    @IsNotEmpty()
+    status:string
 }

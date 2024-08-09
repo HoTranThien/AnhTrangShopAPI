@@ -6,7 +6,6 @@ import { Parent_categoryModule } from './parent_category/parent_category.module'
 import { Children_categoryModule } from './children_category/children_category.module';
 import { Img_productModule } from './img_product/img_product.module';
 import { ProductModule } from './product/product.module';
-import { StatusModule } from './status/status.module';
 import { DeliveryModule } from './delivery/delivery.module';
 import { OrderModule } from './order/order.module';
 
@@ -21,7 +20,6 @@ import { OrderModule } from './order/order.module';
     Children_categoryModule,
     Img_productModule,
     ProductModule,
-    StatusModule,
     DeliveryModule,
     OrderModule,
   ],

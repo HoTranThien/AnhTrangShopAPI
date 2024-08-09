@@ -14,7 +14,7 @@ export class ProductController{
     }
 
     @Get('getone/:id')
-    getOne(@Param('id') id:number){
+    getOne(@Param('id',ParseIntPipe) id:number){
         return this.ProductService.getOneProduct(Number(id));
     }
 
@@ -32,7 +32,19 @@ export class ProductController{
     }
 
     @Delete('delete/:id')
-    deleteProduct(@Param('id') id:number){
+    deleteProduct(@Param('id',ParseIntPipe) id:number){
         return this.ProductService.deleteProduct(Number(id));
+    }
+    @Get('sale')
+    getSaleProducts(){
+        return this.ProductService.getSaleProducts();
+    }
+    @Get('new')
+    getNewProducts(){
+        return this.ProductService.getNewProducts();
+    }
+    @Get('search/:key')
+    getSubcategoryProducts(@Param('key') key:string){
+        return this.ProductService.getSearchedProducts(key);
     }
 }

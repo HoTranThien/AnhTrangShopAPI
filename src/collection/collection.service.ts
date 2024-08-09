@@ -9,12 +9,64 @@ constructor(private prisma: PrismaService, private cloudinary:CloudinaryService)
 getAllCollection(){
     return this.prisma.collection.findMany();
 }
-
+getAllCollectionFullDetail(){
+  return this.prisma.collection.findMany({select:{
+    id:true,
+    img:true,
+    name:true,
+    product:{select:{
+      id:true,
+      name:true,
+      collection:true,
+      parent_category:true,
+      children_category:true,
+      img_product:true,
+      cost:true,
+      sale_cost:true,
+      quantity:true,
+      new:true,
+      productColor:{select:{
+        colorId:true,
+        color:true,
+      }},
+      productSize:{select:{
+        sizeId:true,
+        size:true
+      }},
+      description:true,
+    }},
+  }});
+}
 
 getOneCollection(id:number){
     return this.prisma.collection.findFirst({ where: {
         id: id,
-      },});
+      },select:{
+        id:true,
+        img:true,
+        name:true,
+        product:{select:{
+          id:true,
+          name:true,
+          collection:true,
+          parent_category:true,
+          children_category:true,
+          img_product:true,
+          cost:true,
+          sale_cost:true,
+          quantity:true,
+          new:true,
+          productColor:{select:{
+            colorId:true,
+            color:true,
+          }},
+          productSize:{select:{
+            sizeId:true,
+            size:true
+          }},
+          description:true,
+        }}
+      }});
 }
 
 

@@ -79,7 +79,6 @@ async createProduct(Product:ProductDto,imgs:Express.Multer.File[]){
     
 
 async updateProduct(id:number,Product:UpdateProductDto,imgs:Express.Multer.File[]){
-    console.log(Product);
     //update basic infomation
     let update = await this.prisma.product.update({where: {
         id: id,
@@ -174,4 +173,77 @@ async deleteProduct(id:number){
       },})
       return {message: 'Success'}
 }
+
+getSaleProducts(){
+    return this.prisma.product.findMany({where:{sale_cost:{gt:0}},select:{
+        id:true,
+            name:true,
+            collection:true,
+            parent_category:true,
+            children_category:true,
+            img_product:true,
+            cost:true,
+            sale_cost:true,
+            quantity:true,
+            new:true,
+            productColor:{select:{
+                colorId:true,
+                color:true,
+            }},
+            productSize:{select:{
+                sizeId:true,
+                size:true
+            }},
+            description:true,
+
+    }})
+}
+
+getNewProducts(){
+    return this.prisma.product.findMany({where:{new:true},select:{
+        id:true,
+            name:true,
+            collection:true,
+            parent_category:true,
+            children_category:true,
+            img_product:true,
+            cost:true,
+            sale_cost:true,
+            quantity:true,
+            new:true,
+            productColor:{select:{
+                colorId:true,
+                color:true,
+            }},
+            productSize:{select:{
+                sizeId:true,
+                size:true
+            }},
+            description:true,
+
+    }});
+}
+
+    getSearchedProducts(key:string){
+        return this.prisma.product.findMany({where:{name:{contains:key}},select:{
+            id:true,
+            name:true,
+            collection:true,
+            parent_category:true,
+            children_category:true,
+            img_product:true,
+            cost:true,
+            sale_cost:true,
+            quantity:true,
+            new:true,
+            productColor:{select:{
+                colorId:true,
+                color:true,
+            }},
+            productSize:{select:{
+                sizeId:true,
+                size:true
+            }},
+            description:true,
+        }})}
 }

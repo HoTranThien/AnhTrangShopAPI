@@ -13,7 +13,31 @@ getAllChildren_category(){
 getOneChildren_category(id:number){
     return this.prisma.children_category.findFirst({ where: {
         id: id,
-      },});
+      },select:{
+        id:true,
+        name:true,
+        product:{select:{
+          id:true,
+          name:true,
+          collection:true,
+          parent_category:true,
+          children_category:true,
+          img_product:true,
+          cost:true,
+          sale_cost:true,
+          quantity:true,
+          new:true,
+          productColor:{select:{
+            colorId:true,
+            color:true,
+          }},
+          productSize:{select:{
+            sizeId:true,
+            size:true
+          }},
+          description:true,
+        }}
+      }});
 }
     
 createChildren_category(Children_category:Children_categoryDto){

@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from "@nestjs/common";
 import { OrderService } from "./order.service";
-import { OrderDto } from "./dto/order.dto";
+import { OrderDto, Status, UpdateOrderDto } from "./dto/order.dto";
 
 @Controller('api/order')
 export class OrderController{
@@ -11,7 +11,7 @@ export class OrderController{
     }
 
     @Get('getone/:id')
-    getOne(@Param('id') id:number){
+    getOne(@Param('id',ParseIntPipe) id:number){
         return this.OrderService.getOneOrder(Number(id));
     }
 
@@ -21,12 +21,20 @@ export class OrderController{
     }
 
     @Put('update/:id')
-    updateOrder(@Param('id') id:number,@Body() Order:OrderDto){
-        return this.OrderService.updateOrdert(Number(id),Order);
+    updateOrder(@Param('id',ParseIntPipe) id:number,@Body() Order:UpdateOrderDto){
+        return this.OrderService.updateOrder(Number(id),Order);
+    }
+    @Put('updatestatus/:id')
+    updateStatus(@Param('id',ParseIntPipe) id:number,@Body() status:Status){
+        return this.OrderService.updateStatus(Number(id),status);
     }
 
     @Delete('delete/:id')
-    deleteOrder(@Param('id') id:number){
+    deleteOrder(@Param('id',ParseIntPipe) id:number){
         return this.OrderService.deleteOrder(Number(id));
+    }
+    @Get('status')
+    getStatus(){
+        return this.OrderService.getStatus();
     }
 }

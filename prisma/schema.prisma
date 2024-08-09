@@ -29,11 +29,11 @@ model Product {
   description   String?     @db.Text
   quantity      Int         @default(0)
   new           Boolean?     @default(true)
-  collection    Collection?  @relation(fields: [collectionId], references: [id])
+  collection    Collection?  @relation(fields: [collectionId], references: [id],onDelete: Restrict, onUpdate: Cascade)
   collectionId  Int?
-  parent_category  Parent_category?  @relation(fields: [parent_categoryId], references: [id])
+  parent_category  Parent_category?  @relation(fields: [parent_categoryId], references: [id],onDelete: Restrict, onUpdate: Cascade)
   parent_categoryId Int?
-  children_category Children_category? @relation(fields: [children_categoryId], references: [id])
+  children_category Children_category? @relation(fields: [children_categoryId], references: [id],onDelete: Restrict, onUpdate: Cascade)
   children_categoryId  Int?
   productOrder  ProductOrder[]
   productColor  ProductColor[]
@@ -45,30 +45,33 @@ model Product {
 model Order{
   id            Int         @id @default(autoincrement())
   product       ProductOrder[]
-  status_id     Int
-  status        Status      @relation(fields: [status_id], references: [id])
+  status        Status      @default(NEW_ORDER)
   customer_name String
   customer_tel  String
-  customer_address  String
+  customer_address  String  @db.VarChar(1000)
   customer_note String      @db.Text
   note          String      @db.Text
   delivery_id   Int
-  delivery      Delivery    @relation(fields: [delivery_id], references: [id])
+  delivery      Delivery    @relation(fields: [delivery_id], references: [id],onDelete: Restrict, onUpdate: Cascade)
   total         Int
+
+  createdAt     DateTime?    @default(now())
+  updatedAt     DateTime?    @updatedAt
 }
 model ProductOrder{
-  order         Order       @relation(fields: [orderId], references: [id])
+  order         Order       @relation(fields: [orderId], references: [id],onDelete: Cascade, onUpdate: Cascade)
   orderId       Int
-  product       Product     @relation(fields: [productId], references: [id])
+  product       Product     @relation(fields: [productId], references: [id],onDelete: Cascade, onUpdate: Cascade)
   productId     Int
-  sizeId        Int
-  colorId       Int
-  @@id([productId, colorId,sizeId])
+  size          String
+  color         String
+  quantity      Int
+  @@id([productId, color,size,orderId])
 }
 model Img_product{
   id            Int         @id @default(autoincrement())
   link          String
-  product       Product     @relation(fields: [productId], references: [id])
+  product       Product     @relation(fields: [productId], references: [id],onDelete: Cascade, onUpdate: Cascade)
   productId     Int
 }
 model Parent_category{
@@ -82,7 +85,7 @@ model Children_category{
   id            Int         @id @default(autoincrement())
   name          String      @unique
   product       Product[]
-  parent_category    Parent_category  @relation(fields: [pacaId], references: [id])
+  parent_category    Parent_category  @relation(fields: [pacaId], references: [id],onDelete: Restrict, onUpdate: Cascade)
   pacaId        Int
 }
 model Color{
@@ -92,9 +95,9 @@ model Color{
   productColor ProductColor[]
 }
 model ProductColor{
-  product    Product      @relation(fields: [productId], references: [id])
+  product    Product      @relation(fields: [productId], references: [id],onDelete: Cascade, onUpdate: Cascade)
   productId  Int
-  color      Color        @relation(fields: [colorId], references: [id])
+  color      Color        @relation(fields: [colorId], references: [id],onDelete: Cascade, onUpdate: Cascade)
   colorId    Int
 
   @@id([productId, colorId])
@@ -106,23 +109,25 @@ model Size{
   productSize ProductSize[]
 }
 model ProductSize{
-  product    Product    @relation(fields: [productId], references: [id])
+  product    Product    @relation(fields: [productId], references: [id],onDelete: Cascade, onUpdate: Cascade)
   productId  Int
-  size       Size        @relation(fields: [sizeId], references: [id])
+
+  size       Size        @relation(fields: [sizeId], references: [id],onDelete: Cascade, onUpdate: Cascade)
   sizeId     Int
 
   @@id([productId, sizeId])
 }
 
-model Status{
-  id        Int         @id @default(autoincrement())
-  name      String      @unique
-  code      String
-  order     Order[]
-}
 model Delivery{
   id        Int         @id @default(autoincrement())
   name      String      @unique
   cost      Int
   order     Order[]
+}
+
+enum Status{
+  NEW_ORDER
+  IN_DELIVERY
+  DONE
+  CANCEL
 }
