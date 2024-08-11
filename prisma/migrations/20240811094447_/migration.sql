@@ -48,11 +48,11 @@ CREATE TABLE `Order` (
 CREATE TABLE `ProductOrder` (
     `orderId` INTEGER NOT NULL,
     `productId` INTEGER NOT NULL,
-    `sizeId` INTEGER NOT NULL,
-    `colorId` INTEGER NOT NULL,
+    `size` VARCHAR(191) NOT NULL,
+    `color` VARCHAR(191) NOT NULL,
     `quantity` INTEGER NOT NULL,
 
-    PRIMARY KEY (`productId`, `colorId`, `sizeId`)
+    PRIMARY KEY (`productId`, `color`, `size`, `orderId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
