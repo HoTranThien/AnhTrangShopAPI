@@ -119,7 +119,7 @@ async getStatus(){
   let status = await this.prisma.$queryRaw`
   SELECT SUBSTRING(COLUMN_TYPE, 6, LENGTH(COLUMN_TYPE) - 6) AS status
   FROM INFORMATION_SCHEMA.COLUMNS 
-  WHERE TABLE_NAME = 'order' 
+  WHERE TABLE_NAME = 'Order' 
   AND COLUMN_NAME = 'status';
   `
   status[0].status = String(status[0].status).replaceAll("'",'').split(",");
